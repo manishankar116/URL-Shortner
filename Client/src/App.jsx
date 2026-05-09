@@ -24,11 +24,13 @@ function App() {
 
     try {
       setIsLoading(true)
-      const response = await fetch('/shorten', {
+      const response = await fetch('http://localhost:8080/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: longUrl.trim() }),
       })
+
+      console.log('Fetch response:', response)
 
       if (!response.ok) {
         throw new Error('Something went wrong while shortening this URL.')
@@ -36,6 +38,7 @@ function App() {
 
       const data = await response.text()
       setShortUrl(data)
+      console.log('Short URL received:', data)
     } catch (fetchError) {
       setError(fetchError.message || 'Unable to connect to the server.')
       setShortUrl('')
