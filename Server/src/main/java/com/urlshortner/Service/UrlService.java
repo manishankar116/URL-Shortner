@@ -22,17 +22,24 @@ public class UrlService {
     private RedisTemplate<String, String> redisTemplate;
 
     public String shortenUrl(String longUrl) {
-        UrlMapping entity = new UrlMapping();
-        entity.setLongUrl(longUrl);
+        if(repo.findByLongUrl(longUrl).isPresent()) {
+            return "URL Already exists - " +  "http://localhost:8080/" +  repo.findByLongUrl(longUrl).get().getShortCode();
+        }
 
-        repo.save(entity); // generates ID
+        else {
 
-        String shortCode = encoder.encode(entity.getId());
-        entity.setShortCode(shortCode);
+            UrlMapping entity = new UrlMapping();
+            entity.setLongUrl(longUrl);
 
-        repo.save(entity);
+            repo.save(entity);
 
-        return "http://localhost:8080/" + shortCode;
+            String shortCode = encoder.encode(entity.getId());
+            entity.setShortCode(shortCode);
+
+            repo.save(entity);
+
+            return "http://localhost:8080/" + shortCode;
+        }
     }
 
     public String getOriginalUrl(String shortCode) {
@@ -52,7 +59,7 @@ public class UrlService {
 
 
         redisTemplate.opsForValue()
-                .set(shortCode, longUrl, 10, TimeUnit.HOURS);
+                .set(shortCode, longUrl, 10, TimeUnit.MINUTES);
 
         return longUrl;
     }
