@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class UrlController {
 
     @Autowired
